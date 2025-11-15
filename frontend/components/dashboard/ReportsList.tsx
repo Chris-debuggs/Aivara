@@ -113,7 +113,7 @@ export function ReportsList() {
                 key={report.id}
                 href={`/reports/${report.id}`}
                 className="block group"
-                ref={(el) => (cardRefs.current[index] = el)}
+                ref={(el) => { cardRefs.current[index] = el; }}
                 onMouseEnter={(e) => {
                   gsap.to(e.currentTarget, {
                     y: -4,

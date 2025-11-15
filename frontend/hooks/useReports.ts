@@ -26,7 +26,19 @@ export function useReports() {
     setError(null);
     try {
       const data = await api.getReports();
-      setReports(data);
+      // Normalize analysis_result_json into analysis_results for frontend usage
+      const normalized = (data || []).map((r: any) => {
+        const copy = { ...r };
+        try {
+          if (copy.analysis_result_json && typeof copy.analysis_result_json === 'string') {
+            copy.analysis_results = JSON.parse(copy.analysis_result_json);
+          }
+        } catch {
+          copy.analysis_results = null;
+        }
+        return copy;
+      });
+      setReports(normalized);
       return { success: true, data };
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to fetch reports';
@@ -42,6 +54,14 @@ export function useReports() {
     setError(null);
     try {
       const data = await api.getReport(reportId, includeText);
+      // Normalize analysis_result_json
+      try {
+        if (data.analysis_result_json && typeof data.analysis_result_json === 'string') {
+          data.analysis_results = JSON.parse(data.analysis_result_json);
+        }
+      } catch {
+        data.analysis_results = null;
+      }
       return { success: true, data };
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to fetch report';
@@ -57,6 +77,14 @@ export function useReports() {
     setError(null);
     try {
       const data = await api.uploadReport(reportName, file);
+      // Normalize returned report
+      try {
+        if (data.analysis_result_json && typeof data.analysis_result_json === 'string') {
+          data.analysis_results = JSON.parse(data.analysis_result_json);
+        }
+      } catch {
+        data.analysis_results = null;
+      }
       // Refresh reports list
       await fetchReports();
       return { success: true, data };

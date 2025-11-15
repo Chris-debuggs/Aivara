@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useReports } from '@/hooks/useReports';
 import { ReportUpload } from '@/components/dashboard/ReportUpload';
 import { ReportsList } from '@/components/dashboard/ReportsList';
@@ -9,11 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, Upload } from 'lucide-react';
 
 export default function ReportsPage() {
-  const searchParams = useSearchParams();
   const { fetchReports } = useReports();
-  const [activeTab, setActiveTab] = useState(
-    searchParams.get('upload') === 'true' ? 'upload' : 'list'
-  );
+  const [activeTab, setActiveTab] = useState('list');
+
+  // Read the `upload` search param on the client and set the active tab.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      setActiveTab(params.get('upload') === 'true' ? 'upload' : 'list');
+    } catch (e) {
+      // ignore in environments without window
+    }
+  }, []);
 
   useEffect(() => {
     fetchReports();

@@ -52,3 +52,29 @@ export function getUser(): User | null {
 export function isAuthenticated(): boolean {
   return getAuthToken() !== null;
 }
+
+/**
+ * Decode a JWT (without verification) and return the payload as an object.
+ * Useful to extract basic user info (email, sub/user_id, name) from access tokens
+ * when the API doesn't return a separate /me endpoint.
+ */
+export function decodeJwt(token: string | null): any | null {
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    const payload = parts[1];
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    try {
+      return JSON.parse(decodeURIComponent(
+        decoded.split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')
+      ));
+    } catch {
+      return JSON.parse(decoded);
+    }
+  } catch (e) {
+    return null;
+  }
+}

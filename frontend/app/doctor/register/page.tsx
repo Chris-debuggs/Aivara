@@ -23,6 +23,8 @@ interface Hospital {
   name: string;
   city: string;
   state: string;
+  // pincode may be provided by the API for display; make optional to avoid TS errors
+  pincode?: string;
 }
 
 export default function DoctorRegisterPage() {

@@ -125,6 +125,61 @@ You can test the API directly using the interactive Swagger UI.
 
 For more endpoints, see the backend API documentation at `http://localhost:8000/docs`.
 
+## React (Next.js) Frontend (converted from Streamlit)
+
+This repository also includes a full React / Next.js frontend in the `frontend/` folder that reproduces the Streamlit UI and connects to the same backend API. If you prefer the React UI or want to use it in production, follow these steps to run it and connect to the backend:
+
+- Change to the frontend folder:
+
+```bash
+cd frontend
+```
+
+- Install dependencies:
+
+```bash
+npm install
+```
+
+- Configure the backend URL (optional). By default the client uses `http://localhost:8000`. To override, create a `.env.local` file in `frontend/` with:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+- Start the Next.js dev server:
+
+```bash
+npm run dev
+```
+
+The React frontend will be available at `http://localhost:3000` by default. It implements the main Streamlit features:
+
+- Authentication (register / login) — pages under `frontend/app/(auth)` and hook `frontend/hooks/useAuth.ts`
+- Report upload & AI analysis — `frontend/components/dashboard/ReportUpload.tsx` and `frontend/hooks/useReports.ts`
+- Reports list — `frontend/components/dashboard/ReportsList.tsx`
+- Report details, charts and AI analysis — `frontend/app/(dashboard)/reports/[id]/page.tsx` and components in `frontend/components/dashboard/` (e.g., `ReportDetails.tsx`, `HealthMarkerChart.tsx`, `AIAnalysisDisplay.tsx`)
+
+The frontend's API client is in `frontend/lib/api.ts` and already calls the same backend endpoints used by the Streamlit app, including:
+
+- `POST /auth/register`
+- `POST /auth/token`
+- `POST /reports/upload`
+- `GET /reports/`
+- `GET /reports/{report_id}`
+- `POST /ai/analyze/{report_id}`
+- `GET /reports/{report_id}/medicine-suggestions`
+- `GET /reports/{report_id}/women-health`
+
+If you run into CORS or network issues, make sure the backend is running on `http://localhost:8000` and that CORS is enabled on the backend (check `app/main.py` or FastAPI CORS middleware configuration).
+
+If you'd like, I can:
+
+- Verify and add any missing endpoints to the frontend API client.
+- Add example environment files and a small README in `frontend/`.
+- Implement or tweak any UI interactions to match the Streamlit behavior exactly (e.g., auto-select newly uploaded report, show OCR errors inline, etc.).
+
+
 
 
 

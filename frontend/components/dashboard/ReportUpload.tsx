@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { gsap } from 'gsap';
 
 export function ReportUpload() {
+  const router = useRouter();
   const { uploadReport, loading } = useReports();
   const [reportName, setReportName] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -92,12 +94,45 @@ export function ReportUpload() {
 
     try {
       const result = await uploadReport(reportName, file);
-      
+
       clearInterval(progressInterval);
       setUploadProgress(100);
 
       if (result.success) {
-        toast.success('Report uploaded and analyzed successfully!');
+        toast.success('Report uploaded successfully!');
+
+        // If backend returned limited analysis due to missing OCR/LLM, surface a friendly warning
+        try {
+          const created = result.data;
+          // analysis_result_json might be a stringified JSON on the backend
+          const analysisRaw = created?.analysis_result_json;
+          if (analysisRaw) {
+            try {
+              const analysis = typeof analysisRaw === 'string' ? JSON.parse(analysisRaw) : analysisRaw;
+              if (analysis?.llm_explanation && typeof analysis.llm_explanation === 'string' && analysis.llm_explanation.includes('LLM-powered explanation is not available')) {
+                toast.warning('AI analysis is limited because the local model is not available.');
+              }
+            } catch {}
+          }
+
+          // Check for OCR extracted_text or errors
+          if (created?.extracted_text && typeof created.extracted_text === 'string' && created.extracted_text.startsWith('Error extracting text')) {
+            toast.warning('OCR unavailable: uploaded file was saved but text extraction failed (tesseract not installed).');
+          }
+
+          // Navigate to the created report details for immediate review
+          const newId = created?.id;
+          if (newId) {
+            setFile(null);
+            setReportName('');
+            setUploadProgress(0);
+            router.push(`/reports/${newId}`);
+            return;
+          }
+        } catch (e) {
+          // ignore parsing/navigation errors and fall through
+        }
+
         setFile(null);
         setReportName('');
         setUploadProgress(0);

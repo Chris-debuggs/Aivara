@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { setAuthToken, removeAuthToken, setUser, getUser, isAuthenticated as checkAuth } from '@/lib/auth';
+import { setAuthToken, removeAuthToken, setUser, getUser, isAuthenticated as checkAuth, decodeJwt } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 
 export function useAuth() {
@@ -22,14 +22,15 @@ export function useAuth() {
   const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await api.login(email, password);
-      setAuthToken(response.access_token);
-      
-      // Get user info from token or fetch it
-      // For now, we'll store email from login
+      const token = response.access_token;
+      setAuthToken(token);
+
+      // Try to decode user info from JWT payload
+      const payload = decodeJwt(token);
       const userData: User = {
-        id: 0, // Will be populated from API if available
-        email,
-        full_name: email, // Will be populated from API if available
+        id: payload?.user_id || payload?.sub || 0,
+        email: payload?.email || email,
+        full_name: payload?.full_name || payload?.name || email,
       };
       setUser(userData);
       setUserState(userData);
@@ -44,14 +45,24 @@ export function useAuth() {
 
   const register = useCallback(async (email: string, password: string, fullName: string) => {
     try {
-      const response = await api.register(email, password, fullName);
-      setUser(response);
-      setUserState(response);
-      
+      // Call register endpoint
+      await api.register(email, password, fullName);
+
       // Auto-login after registration
       const loginResponse = await api.login(email, password);
-      setAuthToken(loginResponse.access_token);
-      
+      const token = loginResponse.access_token;
+      setAuthToken(token);
+
+      // Populate user from token payload
+      const payload = decodeJwt(token);
+      const userData: User = {
+        id: payload?.user_id || payload?.sub || 0,
+        email: payload?.email || email,
+        full_name: payload?.full_name || payload?.name || fullName || email,
+      };
+      setUser(userData);
+      setUserState(userData);
+
       return { success: true };
     } catch (error: any) {
       return {

@@ -47,6 +47,13 @@ export default function ReportDetailPage() {
     const result = await fetchReport(reportId, true);
     if (result.success) {
       setReport(result.data);
+      // If extracted_text indicates OCR wasn't available, surface a warning
+      try {
+        const txt = result.data?.extracted_text;
+        if (txt && typeof txt === 'string' && txt.startsWith('Error extracting text')) {
+          toast.warning('OCR appears to be unavailable on the server; extracted text is empty. Install tesseract to enable OCR.');
+        }
+      } catch {}
     } else {
       toast.error(result.error || 'Failed to load report');
       router.push('/reports');

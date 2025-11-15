@@ -68,7 +68,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Card ref={(el) => (statCardsRef.current[0] = el)}>
+        <Card ref={(el) => { statCardsRef.current[0] = el; }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
@@ -79,7 +79,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card ref={(el) => (statCardsRef.current[1] = el)}>
+  <Card ref={(el) => { statCardsRef.current[1] = el; }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Recent Reports</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -90,7 +90,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card ref={(el) => (statCardsRef.current[2] = el)}>
+  <Card ref={(el) => { statCardsRef.current[2] = el; }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Analysis</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card ref={(el) => (statCardsRef.current[3] = el)}>
+  <Card ref={(el) => { statCardsRef.current[3] = el; }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Health Trends</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />

@@ -84,7 +84,7 @@ export function AIAnalysisDisplay({ report, reportId }: AIAnalysisDisplayProps) 
     <div className="space-y-6">
       {/* General AI Explanation */}
       {analysis && (
-        <div ref={(el) => (cardRefs.current[0] = el)}>
+        <div ref={(el) => { cardRefs.current[0] = el; }}>
           <Card className="shadow-lg border-primary/10 hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b">
               <CardTitle className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export function AIAnalysisDisplay({ report, reportId }: AIAnalysisDisplayProps) 
 
       {/* Report Reading Insights */}
       {analysis?.report_reading_insights && (
-        <div ref={(el) => (cardRefs.current[1] = el)}>
+        <div ref={(el) => { cardRefs.current[1] = el; }}>
           <Card className="shadow-lg border-blue-200/50 dark:border-blue-800/50 hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-950/20 border-b">
               <CardTitle className="flex items-center gap-2">
@@ -164,7 +164,7 @@ export function AIAnalysisDisplay({ report, reportId }: AIAnalysisDisplayProps) 
       )}
 
       {/* Medicine Suggestions */}
-      <div ref={(el) => (cardRefs.current[2] = el)}>
+  <div ref={(el) => { cardRefs.current[2] = el; }}>
         <Card className="shadow-lg border-green-200/50 dark:border-green-800/50 hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="bg-gradient-to-r from-green-50 to-transparent dark:from-green-950/20 border-b">
             <CardTitle className="flex items-center gap-2">
@@ -223,7 +223,7 @@ export function AIAnalysisDisplay({ report, reportId }: AIAnalysisDisplayProps) 
       </div>
 
       {/* Women's Health Suggestions */}
-      <div ref={(el) => (cardRefs.current[3] = el)}>
+  <div ref={(el) => { cardRefs.current[3] = el; }}>
         <Card className="shadow-lg border-pink-200/50 dark:border-pink-800/50 hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="bg-gradient-to-r from-pink-50 to-transparent dark:from-pink-950/20 border-b">
             <CardTitle className="flex items-center gap-2">
