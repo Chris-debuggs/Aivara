@@ -36,6 +36,11 @@ def call_ollama_llm(prompt: str, model: str, stream: bool = False) -> Optional[s
     Returns:
         The generated text response, or None if the request failed
     """
+    # Check Ollama connection first before making request
+    if not check_ollama_connection():
+        print(f"Ollama server at {OLLAMA_BASE_URL} is not accessible. Skipping LLM generation.")
+        return None
+    
     url = f"{OLLAMA_BASE_URL}/api/generate"
     
     data = {
@@ -48,7 +53,7 @@ def call_ollama_llm(prompt: str, model: str, stream: bool = False) -> Optional[s
     }
     
     try:
-        response = requests.post(url, json=data, timeout=120)  # Longer timeout for local models
+        response = requests.post(url, json=data, timeout=300)  # Increased timeout for large models
         response.raise_for_status()
         result = response.json()
         
@@ -57,6 +62,9 @@ def call_ollama_llm(prompt: str, model: str, stream: bool = False) -> Optional[s
         else:
             print(f"Ollama API returned an unexpected format: {result}")
             return None
+    except requests.exceptions.Timeout:
+        print(f"Ollama API request timed out after 300 seconds. Model {model} may be too large or system too slow.")
+        return None
     except requests.exceptions.RequestException as e:
         print(f"Ollama API request failed: {e}")
         return None
@@ -76,6 +84,11 @@ def call_ollama_chat(messages: list[dict], model: str, stream: bool = False) -> 
     Returns:
         The generated text response, or None if the request failed
     """
+    # Check Ollama connection first before making request
+    if not check_ollama_connection():
+        print(f"Ollama server at {OLLAMA_BASE_URL} is not accessible. Skipping chat generation.")
+        return None
+    
     url = f"{OLLAMA_BASE_URL}/api/chat"
     
     data = {
@@ -88,7 +101,7 @@ def call_ollama_chat(messages: list[dict], model: str, stream: bool = False) -> 
     }
     
     try:
-        response = requests.post(url, json=data, timeout=120)
+        response = requests.post(url, json=data, timeout=300)
         response.raise_for_status()
         result = response.json()
         
@@ -97,6 +110,9 @@ def call_ollama_chat(messages: list[dict], model: str, stream: bool = False) -> 
         else:
             print(f"Ollama Chat API returned an unexpected format: {result}")
             return None
+    except requests.exceptions.Timeout:
+        print(f"Ollama Chat API request timed out after 300 seconds. Model {model} may be too large or system too slow.")
+        return None
     except requests.exceptions.RequestException as e:
         print(f"Ollama Chat API request failed: {e}")
         return None
@@ -163,8 +179,13 @@ def check_ollama_connection() -> bool:
         True if Ollama is accessible, False otherwise
     """
     try:
-        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
+        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=3)
         return response.status_code == 200
-    except:
+    except requests.exceptions.Timeout:
+        print(f"Ollama connection check timed out. Server may be overloaded.")
+        return False
+    except requests.exceptions.ConnectionError:
+        return False
+    except Exception as e:
         return False
 

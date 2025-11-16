@@ -178,8 +178,3 @@ If you'd like, I can:
 - Verify and add any missing endpoints to the frontend API client.
 - Add example environment files and a small README in `frontend/`.
 - Implement or tweak any UI interactions to match the Streamlit behavior exactly (e.g., auto-select newly uploaded report, show OCR errors inline, etc.).
-
-
-
-
-

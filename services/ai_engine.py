@@ -169,15 +169,27 @@ def analyze_health_markers(markers: Dict[str, float | None], patient_id: Optiona
                     query = "Previous medical reports and health history"
             
             # Retrieve historical context
-            historical_context = get_patient_context(patient_id=patient_id, query=query, k=config.RAG_TOP_K)
+            try:
+                historical_context = get_patient_context(patient_id=patient_id, query=query, k=config.RAG_TOP_K)
+            except Exception as rag_e:
+                print(f"Warning: RAG retrieval failed: {rag_e}")
+                historical_context = None
             
             if not historical_context:
                 # Fallback: try a more general query
-                historical_context = get_patient_context(
-                    patient_id=patient_id, 
-                    query="Previous medical reports and test results", 
-                    k=config.RAG_TOP_K
-                )
+                try:
+                    historical_context = get_patient_context(
+                        patient_id=patient_id, 
+                        query="Previous medical reports and test results", 
+                        k=config.RAG_TOP_K
+                    )
+                except Exception as fallback_e:
+                    print(f"Warning: Fallback RAG retrieval also failed: {fallback_e}")
+                    historical_context = None
+        except ImportError as ie:
+            # Handle case where vector store is not available
+            print(f"Warning: Vector store not available for RAG: {ie}")
+            historical_context = None
         except Exception as e:
             # Log error but don't fail analysis if RAG retrieval fails
             print(f"Warning: Failed to retrieve historical context for patient {patient_id}: {e}")

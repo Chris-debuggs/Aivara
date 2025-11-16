@@ -1,0 +1,43 @@
+# Backend updated requirements (generated)
+# Generated on 2025-11-16
+
+# 1) Pip-installed packages in the active environment (from `pip freeze`)
+# These are the packages that will be captured if you run `pip install -r backend-updated-requirements.txt`
+
+lxml==5.3.0
+pillow==10.4.0
+python-docx==1.1.2
+python-pptx==1.0.2
+typing_extensions==4.12.2
+XlsxWriter==3.2.0
+
+# 2) Packages present in `requirements.txt` but NOT found in pip freeze output
+# (these may be installed via conda or missing from the current Python env)
+# Review and pin versions if you want them installed via pip.
+
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-jose[cryptography]
+passlib[bcrypt]
+pytesseract
+pdfplumber
+python-multipart
+chromadb==0.5.5
+sentence-transformers==3.0.1
+numpy==1.26.4
+streamlit
+plotly
+pandas
+
+# 3) Note about conda-managed packages
+# A full conda export was saved to `backend-conda-list.txt`. If you prefer to reproduce
+a complete environment using conda, use that file with:
+#   conda create --name <env> --file backend-conda-list.txt
+
+# 4) Diff report
+# A human-readable comparison was written to `requirements-diff.md` which shows which
+# requirements are FOUND in pip, FOUND in conda, or MISSING.
+
+# ---- End of file
